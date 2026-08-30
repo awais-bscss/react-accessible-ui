@@ -29,7 +29,7 @@ function List({ children, label = 'Navigation tabs' }) {
 
   const count = Array.isArray(children) ? children.length : 1;
 
-  const handleKeyDown = useCallback((e) => {
+  const handleKeyDown = (e) => {
     let next = activeIndex;
 
     if      (e.key === 'ArrowRight') next = (activeIndex + 1) % count;
@@ -41,7 +41,7 @@ function List({ children, label = 'Navigation tabs' }) {
     e.preventDefault();
     selectTab(next);
     focusTrigger(next);
-  }, [activeIndex, count, selectTab, focusTrigger]);
+  };
 
   return (
     <div

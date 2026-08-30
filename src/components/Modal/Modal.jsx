@@ -1,4 +1,4 @@
-import { createContext, useContext, useId, useEffect } from 'react';
+import { createContext, useContext, useId, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { useKeyboard }  from '../../hooks/useKeyboard';
@@ -13,6 +13,7 @@ function useModalContext() {
 
 function Root({ isOpen, onClose, size = 'md', children }) {
   const titleId = useId();
+  const ctx = useMemo(() => ({ onClose, titleId, size }), [onClose, titleId, size]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -27,7 +28,7 @@ function Root({ isOpen, onClose, size = 'md', children }) {
   if (!isOpen) return null;
 
   return (
-    <ModalContext.Provider value={{ onClose, titleId, size }}>
+    <ModalContext.Provider value={ctx}>
       {children}
     </ModalContext.Provider>
   );

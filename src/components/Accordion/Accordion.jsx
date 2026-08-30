@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback, useMemo, useRef } from 'react';
+import { createContext, useContext, useCallback, useMemo, useRef, useLayoutEffect } from 'react';
 import { useAccordion } from '../../hooks/useAccordion';
 
 const AccordionContext  = createContext(null);
@@ -37,7 +37,9 @@ function Root({ mode = 'single', defaultOpen = [], children, id = 'accordion' })
 function Item({ index, children }) {
   const { isOpen, countRef } = useAccordionCtx();
 
-  countRef.current = Math.max(countRef.current, index + 1);
+  useLayoutEffect(() => {
+    countRef.current = Math.max(countRef.current, index + 1);
+  }, [index, countRef]);
 
   const open = isOpen(index);
   const itemCtx = useMemo(() => ({ index, open }), [index, open]);
@@ -58,13 +60,13 @@ function Trigger({ children }) {
   const { toggle, setRef, focusItem, id, countRef } = useAccordionCtx();
   const { index, open } = useAccordionItemCtx();
 
-  const handleKeyDown = useCallback((e) => {
+  const handleKeyDown = (e) => {
     const count = countRef.current;
     if      (e.key === 'ArrowDown') { e.preventDefault(); focusItem((index + 1) % count); }
     else if (e.key === 'ArrowUp')   { e.preventDefault(); focusItem((index - 1 + count) % count); }
     else if (e.key === 'Home')      { e.preventDefault(); focusItem(0); }
     else if (e.key === 'End')       { e.preventDefault(); focusItem(count - 1); }
-  }, [index, countRef, focusItem]);
+  };
 
   return (
     <button

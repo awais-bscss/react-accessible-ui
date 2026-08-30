@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useLayoutEffect } from 'react';
 
 export function useKeyboard(keyMap, isActive = true) {
   const keyMapRef = useRef(keyMap);
-  useEffect(() => {
+  useLayoutEffect(() => {
     keyMapRef.current = keyMap;
-  });
+  }, [keyMap]);
 
   useEffect(() => {
     if (!isActive) return;
