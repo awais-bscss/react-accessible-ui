@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback, useMemo, useRef, useLayoutEffect } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import { useAccordion } from '../../hooks/useAccordion';
 
 const AccordionContext  = createContext(null);
@@ -17,14 +17,11 @@ function useAccordionItemCtx() {
 }
 
 function Root({ mode = 'single', defaultOpen = [], children, id = 'accordion' }) {
-  const { toggle, isOpen, setRef, focusItem } = useAccordion({ mode, defaultOpen });
-
-  const countRef = useRef(0);
-  countRef.current = 0;
+  const { toggle, isOpen, setRef, focusItem, handleKeyDown } = useAccordion({ mode, defaultOpen });
 
   const ctx = useMemo(
-    () => ({ toggle, isOpen, setRef, focusItem, id, countRef }),
-    [toggle, isOpen, setRef, focusItem, id]
+    () => ({ toggle, isOpen, setRef, focusItem, handleKeyDown, id }),
+    [toggle, isOpen, setRef, focusItem, handleKeyDown, id]
   );
 
   return (
@@ -35,12 +32,7 @@ function Root({ mode = 'single', defaultOpen = [], children, id = 'accordion' })
 }
 
 function Item({ index, children }) {
-  const { isOpen, countRef } = useAccordionCtx();
-
-  useLayoutEffect(() => {
-    countRef.current = Math.max(countRef.current, index + 1);
-  }, [index, countRef]);
-
+  const { isOpen } = useAccordionCtx();
   const open = isOpen(index);
   const itemCtx = useMemo(() => ({ index, open }), [index, open]);
 
@@ -57,16 +49,8 @@ function Item({ index, children }) {
 }
 
 function Trigger({ children }) {
-  const { toggle, setRef, focusItem, id, countRef } = useAccordionCtx();
+  const { toggle, setRef, id, handleKeyDown } = useAccordionCtx();
   const { index, open } = useAccordionItemCtx();
-
-  const handleKeyDown = (e) => {
-    const count = countRef.current;
-    if      (e.key === 'ArrowDown') { e.preventDefault(); focusItem((index + 1) % count); }
-    else if (e.key === 'ArrowUp')   { e.preventDefault(); focusItem((index - 1 + count) % count); }
-    else if (e.key === 'Home')      { e.preventDefault(); focusItem(0); }
-    else if (e.key === 'End')       { e.preventDefault(); focusItem(count - 1); }
-  };
 
   return (
     <button
@@ -76,7 +60,7 @@ function Trigger({ children }) {
       aria-controls={`${id}-panel-${index}`}
       className="accordion-trigger"
       onClick={() => toggle(index)}
-      onKeyDown={handleKeyDown}
+      onKeyDown={(e) => handleKeyDown(e, index)}
       type="button"
     >
       <span>{children}</span>

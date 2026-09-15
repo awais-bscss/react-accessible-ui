@@ -27,5 +27,19 @@ export function useAccordion({ mode = 'single', defaultOpen = [] } = {}) {
     itemRefs.current[index]?.focus();
   }, []);
 
-  return { toggle, isOpen, setRef, focusItem };
+  const handleKeyDown = useCallback(
+    (e, currentIndex) => {
+      const count = itemRefs.current.filter(Boolean).length;
+      if (count === 0) return;
+
+      if      (e.key === 'ArrowDown') { e.preventDefault(); focusItem((currentIndex + 1) % count); }
+      else if (e.key === 'ArrowUp')   { e.preventDefault(); focusItem((currentIndex - 1 + count) % count); }
+      else if (e.key === 'Home')      { e.preventDefault(); focusItem(0); }
+      else if (e.key === 'End')       { e.preventDefault(); focusItem(count - 1); }
+    },
+    [focusItem]
+  );
+
+  return { toggle, isOpen, setRef, focusItem, handleKeyDown };
 }
+
