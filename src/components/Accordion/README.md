@@ -47,7 +47,7 @@ Two separate Context levels are used deliberately:
 
 | Context | Consumers | Contains |
 |---------|-----------|----------|
-| `AccordionContext` | All sub-components | `toggle`, `isOpen`, `setRef`, `focusItem`, `id`, `countRef` |
+| `AccordionContext` | All sub-components | `toggle`, `isOpen`, `setRef`, `focusItem`, `handleKeyDown`, `id` |
 | `AccordionItemCtx` | `Trigger`, `Panel` only | `index`, `open` |
 
 This avoids prop drilling while keeping per-item data scoped to each item.
@@ -58,7 +58,7 @@ This avoids prop drilling while keeping per-item data scoped to each item.
 
 | Hook | Purpose |
 |------|---------|
-| `useAccordion` | Owns `openItems` Set, `toggle`, `isOpen`, trigger ref array, `focusItem` |
+| `useAccordion` | Owns `openItems` Set, `toggle`, `isOpen`, trigger ref array, `focusItem`, and `handleKeyDown` |
 
 ---
 

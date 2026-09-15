@@ -60,6 +60,7 @@ function Example() {
 | `useModal` | Owns `isOpen` state, exposes `open` / `close` |
 | `useFocusTrap` | Traps Tab / Shift+Tab inside the panel |
 | `useKeyboard` | Closes modal on Escape key |
+| `useScrollLock` | Locks body scroll (`overflow: hidden`) when modal is open |
 
 ---
 

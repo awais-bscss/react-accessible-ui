@@ -21,11 +21,12 @@ Custom hooks powering the components: [Hooks README](./src/hooks/README.md)
 ```
 src/
 ├── hooks/
+│   ├── useAccordion.js
 │   ├── useFocusTrap.js
 │   ├── useKeyboard.js
 │   ├── useModal.js
-│   ├── useTabs.js
-│   └── useAccordion.js
+│   ├── useScrollLock.js
+│   └── useTabs.js
 ├── components/
 │   ├── Modal/
 │   │   ├── Modal.jsx
@@ -61,12 +62,20 @@ Opens at `http://localhost:5173`
 
 ---
 
+## Architecture: Headless Hooks & Separation of Concerns
+
+This library strictly follows the **Headless UI / Behavior Hook** pattern:
+- **Custom Hooks (`src/hooks/`)**: Own all stateful logic, keyboard navigation (`Arrow keys`, `Home`, `End`, `Tab`, `Escape`), focus management, and browser side-effects (focus trapping, scroll locking).
+- **Compound Components (`src/components/`)**: Act as pure presentation wrappers. They expose an ergonomic, declarative API via Context (`Tabs.Root`, `Tabs.List`, `Accordion.Item`, etc.) without cluttering JSX with keyboard calculations or DOM mutations.
+
+---
+
 ## Core React Concepts Used
 
 | Concept | Where |
 |---------|-------|
 | `useState` | `useModal`, `useTabs`, `useAccordion` |
-| `useEffect` + cleanup | `useFocusTrap`, `useKeyboard`, Modal body-scroll lock |
+| `useEffect` + cleanup | `useFocusTrap`, `useKeyboard`, `useScrollLock` |
 | `useRef` | `useFocusTrap` (container ref), `useTabs` (trigger refs), `useAccordion` (item refs), `useKeyboard` (keyMap ref) |
 | Controlled components | Form inside Form Modal |
 | Keys | `TAB_ITEMS.map(…, i)` and `ACCORDION_ITEMS.map(…, i)` |
@@ -75,10 +84,10 @@ Opens at `http://localhost:5173`
 
 | Hook / File | Why useEffect | Cleanup |
 |-------------|---------------|---------|
-| `useFocusTrap` | Attach Tab-cycling keydown after DOM renders | Removes listener on close |
+| `useFocusTrap` | Attach Tab-cycling keydown after DOM renders | Removes listener on close & restores focus |
 | `useKeyboard` (sync effect) | Keep `keyMapRef` current on every render | None needed |
 | `useKeyboard` (subscribe effect) | Attach Escape keydown when `isActive` | Removes listener on unmount |
-| `Modal.Root` | Lock `document.body.overflow` when open | Restores overflow on close |
+| `useScrollLock` | Lock `document.body.overflow` when modal is open | Restores original overflow on close |
 
 ---
 
@@ -86,13 +95,14 @@ Opens at `http://localhost:5173`
 
 | Concept | Where |
 |---------|-------|
-| Custom hooks | `useFocusTrap`, `useKeyboard`, `useModal`, `useTabs`, `useAccordion` |
+| Custom hooks | `useFocusTrap`, `useKeyboard`, `useModal`, `useScrollLock`, `useTabs`, `useAccordion` |
 | `useCallback` | All hook return values for referential stability |
 | `useMemo` | Context value objects in `Tabs.Root`, `Accordion.Root`, `Accordion.Item` |
 | Context API | Shared implicit state between compound sub-components |
 | Compound Components | Modal, Tabs, Accordion |
-| State colocation | State in Root, consumed by children via Context |
+| State colocation | State in Root/Hooks, consumed by children via Context |
 | Composition | Callers compose sub-components freely, no mega-props API |
+
 
 ---
 

@@ -24,10 +24,10 @@ const { isOpen, open, close } = useModal(defaultOpen = false);
 
 ## `useTabs`
 
-Manages active tab index and trigger element refs for keyboard focus.
+Manages active tab index, trigger element refs, and keyboard navigation (ArrowRight, ArrowLeft, Home, End).
 
 ```js
-const { activeIndex, selectTab, setRef, focusTrigger } = useTabs(defaultIndex = 0);
+const { activeIndex, selectTab, setRef, focusTrigger, handleKeyDown } = useTabs(defaultIndex = 0);
 ```
 
 | Return | Type | Description |
@@ -36,6 +36,7 @@ const { activeIndex, selectTab, setRef, focusTrigger } = useTabs(defaultIndex = 
 | `selectTab` | `(index) => void` | Sets the active tab |
 | `setRef` | `(el, index) => void` | Stores trigger element ref |
 | `focusTrigger` | `(index) => void` | Programmatically focuses a trigger |
+| `handleKeyDown` | `(event) => void` | Handles ArrowRight, ArrowLeft, Home, and End navigation |
 
 **React hooks used:** `useState`, `useRef`, `useCallback`
 
@@ -43,10 +44,10 @@ const { activeIndex, selectTab, setRef, focusTrigger } = useTabs(defaultIndex = 
 
 ## `useAccordion`
 
-Manages which accordion items are open. Supports `single` and `multiple` modes.
+Manages which accordion items are open, trigger element refs, and keyboard navigation (ArrowDown, ArrowUp, Home, End). Supports `single` and `multiple` modes.
 
 ```js
-const { toggle, isOpen, setRef, focusItem } = useAccordion({ mode, defaultOpen });
+const { toggle, isOpen, setRef, focusItem, handleKeyDown } = useAccordion({ mode, defaultOpen });
 ```
 
 | Return | Type | Description |
@@ -55,6 +56,7 @@ const { toggle, isOpen, setRef, focusItem } = useAccordion({ mode, defaultOpen }
 | `isOpen` | `(index) => boolean` | Whether an item is open |
 | `setRef` | `(el, index) => void` | Stores trigger element ref |
 | `focusItem` | `(index) => void` | Programmatically focuses a trigger |
+| `handleKeyDown` | `(event, index) => void` | Handles ArrowDown, ArrowUp, Home, and End navigation |
 
 **React hooks used:** `useState`, `useRef`, `useCallback`
 
@@ -70,7 +72,7 @@ const containerRef = useFocusTrap(isActive);
 
 - Focuses the first focusable child on activation
 - Falls back to focusing the container itself if no focusable children exist
-- `Tab` / `Shift+Tab` cycle within the container
+- `Tab` / `Shift+Tab` cycle within the container (including single-focusable element safeguard)
 
 **React hooks used:** `useEffect`, `useRef`, `useCallback`
 
@@ -86,4 +88,17 @@ useKeyboard({ Escape: () => close() }, isActive);
 
 Uses a **ref pattern** to avoid stale closures. `keyMapRef` is kept current on every render via a bare effect, while the subscription effect only re-runs when `isActive` changes.
 
-**React hooks used:** `useEffect`, `useRef`
+**React hooks used:** `useEffect`, `useRef`, `useLayoutEffect`
+
+---
+
+## `useScrollLock`
+
+Locks body scroll (`document.body.style.overflow = 'hidden'`) when active, and restores previous scroll on cleanup.
+
+```js
+useScrollLock(isLocked);
+```
+
+**React hooks used:** `useEffect`
+
