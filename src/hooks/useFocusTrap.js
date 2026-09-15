@@ -25,6 +25,12 @@ export function useFocusTrap(isActive) {
       const focusable = getFocusableElements();
       if (focusable.length === 0) return;
 
+      if (focusable.length === 1) {
+        e.preventDefault();
+        focusable[0].focus();
+        return;
+      }
+
       const first = focusable[0];
       const last  = focusable[focusable.length - 1];
 

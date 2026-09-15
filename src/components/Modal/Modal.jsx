@@ -1,7 +1,8 @@
-import { createContext, useContext, useId, useEffect, useMemo } from 'react';
+import { createContext, useContext, useId, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { useKeyboard }  from '../../hooks/useKeyboard';
+import { useScrollLock } from '../../hooks/useScrollLock';
 
 const ModalContext = createContext(null);
 
@@ -15,14 +16,7 @@ function Root({ isOpen, onClose, size = 'md', children }) {
   const titleId = useId();
   const ctx = useMemo(() => ({ onClose, titleId, size }), [onClose, titleId, size]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
+  useScrollLock(isOpen);
   useKeyboard({ Escape: onClose }, isOpen);
 
   if (!isOpen) return null;
