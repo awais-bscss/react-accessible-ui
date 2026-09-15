@@ -1,4 +1,4 @@
-import { createContext, useContext, useCallback, useMemo } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import { useTabs } from '../../hooks/useTabs';
 
 const TabsContext = createContext(null);
@@ -10,11 +10,11 @@ function useTabsContext() {
 }
 
 function Root({ defaultIndex = 0, children, id = 'tabs' }) {
-  const { activeIndex, selectTab, setRef, focusTrigger } = useTabs(defaultIndex);
+  const { activeIndex, selectTab, setRef, focusTrigger, handleKeyDown } = useTabs(defaultIndex);
 
   const ctx = useMemo(
-    () => ({ activeIndex, selectTab, setRef, focusTrigger, id }),
-    [activeIndex, selectTab, setRef, focusTrigger, id]
+    () => ({ activeIndex, selectTab, setRef, focusTrigger, handleKeyDown, id }),
+    [activeIndex, selectTab, setRef, focusTrigger, handleKeyDown, id]
   );
 
   return (
@@ -25,23 +25,7 @@ function Root({ defaultIndex = 0, children, id = 'tabs' }) {
 }
 
 function List({ children, label = 'Navigation tabs' }) {
-  const { activeIndex, selectTab, focusTrigger } = useTabsContext();
-
-  const count = Array.isArray(children) ? children.length : 1;
-
-  const handleKeyDown = (e) => {
-    let next = activeIndex;
-
-    if      (e.key === 'ArrowRight') next = (activeIndex + 1) % count;
-    else if (e.key === 'ArrowLeft')  next = (activeIndex - 1 + count) % count;
-    else if (e.key === 'Home')       next = 0;
-    else if (e.key === 'End')        next = count - 1;
-    else return;
-
-    e.preventDefault();
-    selectTab(next);
-    focusTrigger(next);
-  };
+  const { handleKeyDown } = useTabsContext();
 
   return (
     <div
